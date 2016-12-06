@@ -57,12 +57,17 @@ class User {
 class Hero {
     isInTeam: boolean = false;
     equipments: Equipment[] = [];
-    hp = 50;
     level = 1;
+    hp = 50;
+    power = 100;
+    intelligence = 100;
+    agility = 100;
     quality: number = 2.8;
 
     get maxHp() {
-        return this.level * 100 * this.quality;
+        var result = 0;
+        this.equipments.forEach(e => result += e.EmaxHp)
+        return this.hp + result;
     }
 
     get attack() {
@@ -76,7 +81,13 @@ class Hero {
     }
 
     getFightPower() {
-        return this.maxHp * 1.5 + this.attack * 1.8;
+        var EI = this.intelligence;
+        var EA = this.agility;
+        var EP = this.power;
+        this.equipments.forEach(e => EI += e.intelligence)
+        this.equipments.forEach(e => EA += e.agility)
+        this.equipments.forEach(e => EP += e.power)
+        return EP/2 + EA/3 + EI/4;
     }
 
 }
@@ -84,6 +95,16 @@ class Hero {
 class Equipment {
 
     jewels: jewel[] = [];
+    hp = 100;
+    power = 100;
+    intelligence = 100;
+    agility = 100;
+    level = (this.power+this.intelligence+this.agility)/40;
+
+    get EmaxHp() {
+        this.jewels.forEach(j => this.hp += j.hp)
+        return this.hp^2;
+    }
 
     get attack() {
         return 50;
@@ -91,7 +112,13 @@ class Equipment {
 
 }
 
-class jewel {}
+class jewel {
+    hp = 0;
+    power = 10;
+    intelligence = 10;
+    agility = 10;
+    level = (this.power+this.intelligence+this.agility)/4;
+}
 
 class pet {
     getFightPower() {
