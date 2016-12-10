@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////////
 //
-//  Copyright (c) 2014-2015, Egret Technology Inc.
+//  Copyright (c) 2014-present, Egret Technology.
 //  All rights reserved.
 //  Redistribution and use in source and binary forms, with or without
 //  modification, are permitted provided that the following conditions are met:
@@ -101,26 +101,8 @@ var Main = (function (_super) {
      * Create a game scene
      */
     p.createGameScene = function () {
-        //STR=力量，DEX=灵巧，VIT=耐力(影响hp)，INT=智力，MND=精神，PIE=信仰（影响mp）
-        var user = new User("Disaccharide");
-        var cat = new Hero(user, "猫猫", 100, 100, 300, 200, 200, 300);
-        var dog = new Hero(user, "狗狗", 200, 200, 300, 100, 100, 300);
-        var necklace = new Equipment(cat, "项链", 10, 10, 20, 30, 30, 20);
-        var bracelet = new Equipment(dog, "手镯", 30, 30, 20, 10, 10, 20);
-        cat.isInTeam = true;
-        cat.equip(necklace);
-        cat.heroInformationUpdate;
-        dog.isInTeam = false;
-        dog.equip(bracelet);
-        dog.heroInformationUpdate;
+        var user = new User();
         console.log(user);
-        console.log(cat);
-        console.log(dog);
-        console.log(necklace);
-        console.log(bracelet);
-        //根据name关键字，异步获取一个json配置文件，name属性请参考resources/resource.json配置文件的内容。
-        // Get asynchronously a json configuration file according to name keyword. As for the property of name please refer to the configuration file of resources/resource.json.
-        RES.getResAsync("description_json", this.startAnimation, this);
     };
     /**
      * 根据name关键字创建一个Bitmap对象。name属性请参考resources/resource.json配置文件的内容。
@@ -151,7 +133,7 @@ var Main = (function (_super) {
                 count = 0;
             }
             var lineArr = textflowArr[count];
-            //self.changeDescription(textfield, lineArr);
+            self.changeDescription(textfield, lineArr);
             var tw = egret.Tween.get(textfield);
             tw.to({ "alpha": 1 }, 200);
             tw.wait(2000);
@@ -159,6 +141,13 @@ var Main = (function (_super) {
             tw.call(change, self);
         };
         change();
+    };
+    /**
+     * 切换描述内容
+     * Switch to described content
+     */
+    p.changeDescription = function (textfield, textFlow) {
+        textfield.textFlow = textFlow;
     };
     return Main;
 }(egret.DisplayObjectContainer));

@@ -1,181 +1,147 @@
+/*var Cache:MethodDecorator = (target:any,propertyName,desc:PropertyDescriptor)=>{
+    const getter = desc.get;
+    desc.get = function(){
+        return getter.apply(this);
+    }
+    return desc;
+}
+
+class Hero{
+    public level:number = 1;
+
+    @Cache
+    public get maxHp():number {
+        return this.level = 10;
+    }
+}*/
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var Cache = function (target, propertyName, desc) {
-    var getter = desc.get;
-    desc.get = function () {
-        return getter.apply(this);
-    };
-    return desc;
-};
+var arr = [];
+function test(hero) {
+    return true;
+}
+var is_every_hero_in_team = arr.every(function (hero) { return hero.isInTeam; });
 var User = (function () {
-    function User(ID) {
+    function User() {
         this.cash = 0;
         this.gold = 0;
+        this.exp = 0;
+        this.totalExp = 0;
         this.level = 0;
-        this.H = [];
-        this.id = ID;
+        this.heros = [];
+        this._herosInTeam = [];
     }
     var d = __define,c=User,p=c.prototype;
     d(p, "herosInTeam"
         ,function () {
-            return this.H.filter(function (hero) { return hero.isInTeam; });
+            return this.heros.filter(function (hero) { return hero.isInTeam; });
         }
     );
-    d(p, "maxLevel"
-        ,function () {
-            var _this = this;
-            var result = 0;
-            this.H.forEach(function (h) { return _this.level += h.level; });
-            return this.level;
-        }
-    );
+    p.print = function () {
+        console.log("111");
+    };
+    p.getFightPower = function () {
+        var result = 0;
+        this.herosInTeam.map(function (hero) { return result += hero.getFightPower(); });
+        result += this.pet.getFightPower();
+        return result;
+    };
     __decorate([
-        Cache
-    ], p, "maxLevel", null);
+        logger
+    ], p, "print", null);
     return User;
 }());
 egret.registerClass(User,'User');
-//STR=力量，DEX=灵巧，VIT=耐力(影响hp)，INT=智力，MND=精神，PIE=信仰（影响mp）
 var Hero = (function () {
-    function Hero(Belong, N, S, D, V, I, M, P) {
-        this.level = 1;
-        this.hp = 1;
-        this.mp = 1;
-        this.STR = 1;
-        this.DEX = 1;
-        this.VIT = 1;
-        this.INT = 1;
-        this.MND = 1;
-        this.PIE = 1;
+    function Hero() {
         this.isInTeam = false;
-        this.E = [];
-        this.belong = Belong;
-        this.name = N;
-        this.STR = S;
-        this.DEX = D;
-        this.VIT = V;
-        this.INT = I;
-        this.MND = M;
-        this.PIE = P;
+        this.equipments = [];
+        this.hp = 50;
+        this.level = 1;
+        this.quality = 2.8;
     }
     var d = __define,c=Hero,p=c.prototype;
     d(p, "maxHp"
         ,function () {
-            var result = 0;
-            this.E.forEach(function (e) { return result += e.VIT; });
-            this.hp = result * 100;
-            return this.hp;
+            return this.level * 100 * this.quality;
         }
     );
-    d(p, "maxMp"
+    d(p, "attack"
         ,function () {
             var result = 0;
-            this.E.forEach(function (e) { return result += e.PIE; });
-            this.mp = result * 100;
-            return this.mp;
+            this.equipments.forEach(function (e) { return result += e.attack; });
+            return result;
         }
     );
-    p.equip = function (equipment) {
-        this.E.push(equipment);
-        this.heroInformationUpdate();
+    d(p, "fightPower"
+        ,function () {
+            return this.getFightPower();
+        }
+    );
+    p.getFightPower = function () {
+        return this.maxHp * 1.5 + this.attack * 1.8;
     };
-    p.heroInformationUpdate = function () {
-        var _this = this;
-        this.E.forEach(function (e) { return _this.STR += e.STR; });
-        this.E.forEach(function (e) { return _this.DEX += e.DEX; });
-        this.E.forEach(function (e) { return _this.VIT += e.VIT; });
-        this.E.forEach(function (e) { return _this.INT += e.INT; });
-        this.E.forEach(function (e) { return _this.MND += e.MND; });
-        this.E.forEach(function (e) { return _this.PIE += e.PIE; });
-    };
-    __decorate([
-        Cache
-    ], p, "maxHp", null);
-    __decorate([
-        Cache
-    ], p, "maxMp", null);
     return Hero;
 }());
 egret.registerClass(Hero,'Hero');
 var Equipment = (function () {
-    function Equipment(Belong, N, S, D, V, I, M, P) {
-        this.STR = 100;
-        this.DEX = 100;
-        this.VIT = 100;
-        this.INT = 100;
-        this.MND = 100;
-        this.PIE = 100;
-        this.Eq = 0;
-        this.J = [];
-        this.belong = Belong;
-        this.name = N;
-        this.STR = S;
-        this.DEX = D;
-        this.VIT = V;
-        this.INT = I;
-        this.MND = M;
-        this.PIE = P;
+    function Equipment() {
+        this.jewels = [];
     }
     var d = __define,c=Equipment,p=c.prototype;
-    d(p, "Equality"
+    d(p, "attack"
         ,function () {
-            this.Eq = (this.STR + this.DEX + this.VIT + this.INT + this.MND + this.PIE) / 100;
-            return this.Eq;
+            return 50;
         }
     );
-    d(p, "maxVIT"
-        ,function () {
-            var _this = this;
-            this.J.forEach(function (j) { return _this.VIT += j.VIT; });
-            return this.VIT;
-        }
-    );
-    d(p, "maxPIE"
-        ,function () {
-            var _this = this;
-            this.J.forEach(function (j) { return _this.PIE += j.PIE; });
-            return this.PIE;
-        }
-    );
-    __decorate([
-        Cache
-    ], p, "maxVIT", null);
-    __decorate([
-        Cache
-    ], p, "maxPIE", null);
     return Equipment;
 }());
 egret.registerClass(Equipment,'Equipment');
-var Jewelry = (function () {
-    function Jewelry(Belong, N, S, D, V, I, M, P) {
-        this.STR = 10;
-        this.DEX = 10;
-        this.VIT = 10;
-        this.INT = 10;
-        this.MND = 10;
-        this.PIE = 10;
-        this.Jq = 0;
-        this.belong = Belong;
-        this.name = N;
-        this.STR = S;
-        this.DEX = D;
-        this.VIT = V;
-        this.INT = I;
-        this.MND = M;
-        this.PIE = P;
+var jewel = (function () {
+    function jewel() {
     }
-    var d = __define,c=Jewelry,p=c.prototype;
-    d(p, "Jquality"
-        ,function () {
-            this.Jq = (this.STR + this.DEX + this.VIT + this.INT + this.MND + this.PIE) / 10;
-            return this.Jq;
-        }
-    );
-    return Jewelry;
+    var d = __define,c=jewel,p=c.prototype;
+    return jewel;
 }());
-egret.registerClass(Jewelry,'Jewelry');
+egret.registerClass(jewel,'jewel');
+var pet = (function () {
+    function pet() {
+    }
+    var d = __define,c=pet,p=c.prototype;
+    p.getFightPower = function () {
+        return 200;
+    };
+    return pet;
+}());
+egret.registerClass(pet,'pet');
+var logger = function (target, key, desc) {
+    var method = desc.value;
+    desc.velue = function () {
+        var arg = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            arg[_i - 0] = arguments[_i];
+        }
+        console.log("111");
+        return method.apply(this, arg);
+    };
+};
+var Cache = function (target, propertykey, desc) {
+    var method = desc.value;
+    desc.velue = function () {
+        var arg = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            arg[_i - 0] = arguments[_i];
+        }
+        console.log(target, desc);
+        var cacheKey = "_cache" + propertykey;
+        if (!target[cacheKey]) {
+            target[cacheKey] = method.apply(this, arg);
+        }
+        return target[cacheKey];
+    };
+};
 //# sourceMappingURL=Hero.js.map
