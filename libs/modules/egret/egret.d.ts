@@ -1,28 +1,4 @@
-/**
- * @language en_US
- * Is debug mode.
- * @version Egret 2.5
- * @platform Web,Native
- */
-/**
- * @language zh_CN
- * 是否为 debug 模式。
- * @version Egret 2.5
- * @platform Web,Native
- */
 declare var DEBUG: boolean;
-/**
- * @language en_US
- * Is release mode.
- * @version Egret 2.5
- * @platform Web,Native
- */
-/**
- * @language zh_CN
- * 是否为 release 模式。
- * @version Egret 2.5
- * @platform Web,Native
- */
 declare var RELEASE: boolean;
 declare module egret {
     function $error(code: number, ...params: any[]): void;
@@ -286,7 +262,6 @@ declare module egret {
          * @param bubbles Determines whether the Event object bubbles. Event listeners can access this information through
          * the inherited bubbles property.
          * @param data {any} data
-         * @param cancelable Determines whether the Event object can be canceled. The default values is false.
          * @version Egret 2.4
          * @platform Web,Native
          */
@@ -296,11 +271,10 @@ declare module egret {
          * @param type {string} 事件类型
          * @param bubbles {boolean} 确定 Event 对象是否参与事件流的冒泡阶段。默认值为 false。
          * @param data {any} 事件data
-         * @param cancelable {boolean} 确定是否可以取消 Event 对象。默认值为 false。
          * @version Egret 2.4
          * @platform Web,Native
          */
-        dispatchEventWith(type: string, bubbles?: boolean, data?: any, cancelable?: boolean): boolean;
+        dispatchEventWith(type: string, bubbles?: boolean, data?: any): boolean;
     }
 }
 declare module egret.sys {
@@ -1063,12 +1037,12 @@ declare module egret {
          * @private
          * 标记矩阵失效
          */
-        $invalidateMatrix(): void;
+        private invalidateMatrix();
         /**
          * @private
          * 标记这个显示对象在父级容器的位置发生了改变。
          */
-        $invalidatePosition(): void;
+        private invalidatePosition();
         /**
          * @private
          * 能够含有子项的类将子项列表存储在这个属性里。
@@ -1186,7 +1160,7 @@ declare module egret {
          * @private
          * 设置矩阵
          */
-        $setMatrix(matrix: Matrix, needUpdateProperties?: boolean): boolean;
+        $setMatrix(matrix: Matrix, useProperties?: boolean): boolean;
         /**
          * @private
          * 获得这个显示对象以及它所有父级对象的连接矩阵。
@@ -1925,7 +1899,7 @@ declare module egret {
         /**
          * @private
          */
-        $measureFiltersOffset(): any;
+        $measureFiltersBounds(bounds: Rectangle): Rectangle;
         /**
          * @private
          * 获取相对于指定根节点的连接矩阵。
@@ -2280,21 +2254,16 @@ declare module egret {
          * @private
          */
         private hitTestPixel(stageX, stageY);
+        /**
+         * @private
+         */
         static $drawImage(node: sys.BitmapNode, image: any, bitmapX: number, bitmapY: number, bitmapWidth: number, bitmapHeight: number, offsetX: number, offsetY: number, textureWidth: number, textureHeight: number, destW: number, destH: number, sourceWidth: number, sourceHeight: number, scale9Grid: egret.Rectangle, fillMode: string, smoothing: boolean): void;
+        /**
+         * @private
+         * 绘制九宫格位图
+         */
+        private static drawScale9GridImage(node, scale9Grid, bitmapX, bitmapY, bitmapWidth, bitmapHeight, offsetX, offsetY, textureWidth, textureHeight, destW, destH);
     }
-}
-declare module egret {
-    /**
-     * @private
-     */
-    interface MapLike<T> {
-        [key: string]: T;
-        [key: number]: T;
-    }
-    /**
-     * @private
-     */
-    function createMap<T>(): MapLike<T>;
 }
 declare module egret {
     /**
@@ -2308,7 +2277,6 @@ declare module egret {
      * @see egret.Bitmap
      * @version Egret 2.4
      * @platform Web,Native
-     * @private
      */
     /**
      * @language zh_CN
@@ -2319,9 +2287,8 @@ declare module egret {
      * @see egret.Bitmap
      * @version Egret 2.4
      * @platform Web,Native
-     * @private
      */
-    class BitmapData extends HashObject {
+    interface BitmapData extends HashObject {
         /**
          * @language en_US
          * The width of the bitmap image in pixels.
@@ -2352,57 +2319,6 @@ declare module egret {
          * @platform Web,Native
          */
         height: number;
-        /**
-         * @language en_US
-         * Original bitmap image.
-         * @version Egret 2.4
-         * @platform Web,Native
-         */
-        /**
-         * @language zh_CN
-         * 原始位图图像。
-         * @version Egret 2.4
-         * @platform Web,Native
-         */
-        source: any;
-        /**
-         * @language en_US
-         * WebGL texture.
-         * @version Egret 2.4
-         * @platform Web,Native
-         */
-        /**
-         * @language zh_CN
-         * WebGL纹理。
-         * @version Egret 2.4
-         * @platform Web,Native
-         */
-        webGLTexture: any;
-        /**
-         * @language en_US
-         * Texture format.
-         * @version Egret 2.4
-         * @platform Web,Native
-         */
-        /**
-         * @language zh_CN
-         * 纹理格式。
-         * @version Egret 2.4
-         * @platform Web,Native
-         */
-        format: string;
-        /**
-         * @private
-         * webgl纹理生成后，是否删掉原始图像数据
-         */
-        $deleteSource: boolean;
-        constructor(source: any);
-        $dispose(): void;
-        private static _displayList;
-        static $addDisplayObject(displayObject: DisplayObject, bitmapData: BitmapData | Texture): void;
-        static $removeDisplayObject(displayObject: DisplayObject, bitmapData: BitmapData | Texture): void;
-        static $invalidate(bitmapData: BitmapData | Texture): void;
-        static $dispose(bitmapData: BitmapData | Texture): void;
     }
 }
 declare module egret {
@@ -2424,11 +2340,47 @@ declare module egret {
      * @platform Web,Native
      * @includeExample egret/display/BitmapFillMode.ts
      */
-    const BitmapFillMode: {
-        REPEAT: string;
-        SCALE: string;
-        CLIP: string;
-    };
+    class BitmapFillMode {
+        /**
+         * @language en_US
+         * Repeat the bitmap to fill area.
+         * @version Egret 2.4
+         * @platform Web
+         */
+        /**
+         * @language zh_CN
+         * 重复位图以填充区域。
+         * @version Egret 2.4
+         * @platform Web
+         */
+        static REPEAT: string;
+        /**
+         * @language en_US
+         * Scale bitmap fill to fill area.
+         * @version Egret 2.4
+         * @platform Web,Native
+         */
+        /**
+         * @language zh_CN
+         * 位图填充拉伸以填充区域。
+         * @version Egret 2.4
+         * @platform Web,Native
+         */
+        static SCALE: string;
+        /**
+         * @language en_US
+         * The bitmap ends at the edge of the region.
+         * @version Egret 2.4
+         * @platform Web,Native
+         */
+        /**
+         * @language zh_CN
+         * 在区域的边缘处截断不显示位图。
+         * @version Egret 2.4
+         * @platform Web,Native
+         */
+        static CLIP: string;
+    }
 }
 declare module egret {
     /**
@@ -2527,11 +2479,47 @@ declare module egret {
      * @version Egret 2.5
      * @platform Web,Native
      */
-    const CapsStyle: {
-        NONE: string;
-        ROUND: string;
-        SQUARE: string;
-    };
+    class CapsStyle {
+        /**
+         * @language en_US
+         * Used to specify no caps in the caps parameter of the egret.Graphics.lineStyle() method.
+         * @version Egret 2.5
+         * @platform Web,Native
+         */
+        /**
+         * @language zh_CN
+         * 用于在 egret.Graphics.lineStyle() 方法的 caps 参数中指定没有端点。
+         * @version Egret 2.5
+         * @platform Web,Native
+         */
+        static NONE: string;
+        /**
+         * @language en_US
+         * Used to specify round caps in the caps parameter of the egret.Graphics.lineStyle() method.
+         * @version Egret 2.5
+         * @platform Web,Native
+         */
+        /**
+         * @language zh_CN
+         * 用于在 egret.Graphics.lineStyle() 方法的 caps 参数中指定圆头端点。
+         * @version Egret 2.5
+         * @platform Web,Native
+         */
+        static ROUND: string;
+        /**
+         * @language en_US
+         * Used to specify square caps in the caps parameter of the egret.Graphics.lineStyle() method.
+         * @version Egret 2.5
+         * @platform Web,Native
+         */
+        /**
+         * @language zh_CN
+         * 用于在 egret.Graphics.lineStyle() 方法的 caps 参数中指定方头端点。
+         * @version Egret 2.5
+         * @platform Web,Native
+         */
+        static SQUARE: string;
+    }
 }
 declare module egret {
     /**
@@ -2543,13 +2531,37 @@ declare module egret {
     /**
      * @language zh_CN
      * 脏矩形策略常量。
-     * @version Egret 3.0
+     * @version Egret 2.5
      * @platform Web,Native
      */
-    const DirtyRegionPolicy: {
-        OFF: string;
-        ON: string;
-    };
+    class DirtyRegionPolicy {
+        /**
+         * @language en_US
+         * Close automatic detection of dirty region
+         * @version Egret 2.5
+         * @platform Web,Native
+         */
+        /**
+         * @language zh_CN
+         * 关闭自动脏矩形检测
+         * @version Egret 2.5
+         * @platform Web,Native
+         */
+        static OFF: string;
+        /**
+         * @language en_US
+         * Open automatic detection of dirty region
+         * @version Egret 2.5
+         * @platform Web,Native
+         */
+        /**
+         * @language zh_CN
+         * 开启自动脏矩形检测
+         * @version Egret 2.5
+         * @platform Web,Native
+         */
+        static ON: string;
+    }
 }
 declare module egret {
     /**
@@ -3103,24 +3115,26 @@ declare module egret {
          * @language en_US
          * Specifies a gradient fill used by subsequent calls to other Graphics methods (such as lineTo() or drawCircle()) for the object.
          * Calling the clear() method clears the fill.
+         * Note: Only support on Canvas
          * @param type A value from the GradientType class that specifies which gradient type to use: GradientType.LINEAR or GradientType.RADIAL.
          * @param colors An array of RGB hexadecimal color values used in the gradient; for example, red is 0xFF0000, blue is 0x0000FF, and so on. You can specify up to 15 colors. For each color, specify a corresponding value in the alphas and ratios parameters.
          * @param alphas An array of alpha values for the corresponding colors in the colors array;
          * @param ratios An array of color distribution ratios; valid values are 0-255.
          * @param matrix A transformation matrix as defined by the egret.Matrix class. The egret.Matrix class includes a createGradientBox() method, which lets you conveniently set up the matrix for use with the beginGradientFill() method.
-         * @platform Web,Native
+         * @platform Web
          * @version Egret 2.4
          */
         /**
          * @language zh_CN
-         * 指定一种渐变填充，用于随后调用对象的其他 Graphics 方法（如 lineTo() 或 drawCircle()）。
+         * 指定一种简单的单一颜色填充，在绘制时该填充将在随后对其他 Graphics 方法（如 lineTo() 或 drawCircle()）的调用中使用。
          * 调用 clear() 方法会清除填充。
+         * 注：该方法目前仅支持H5 Canvas
          * @param type 用于指定要使用哪种渐变类型的 GradientType 类的值：GradientType.LINEAR 或 GradientType.RADIAL。
          * @param colors 渐变中使用的 RGB 十六进制颜色值的数组（例如，红色为 0xFF0000，蓝色为 0x0000FF，等等）。对于每种颜色，请在 alphas 和 ratios 参数中指定对应值。
          * @param alphas colors 数组中对应颜色的 alpha 值数组。
          * @param ratios 颜色分布比率的数组。有效值为 0 到 255。
          * @param matrix 一个由 egret.Matrix 类定义的转换矩阵。egret.Matrix 类包括 createGradientBox() 方法，通过该方法可以方便地设置矩阵，以便与 beginGradientFill() 方法一起使用
-         * @platform Web,Native
+         * @platform Web
          * @version Egret 2.4
          */
         beginGradientFill(type: string, colors: number[], alphas: number[], ratios: number[], matrix?: egret.Matrix): void;
@@ -3430,10 +3444,6 @@ declare module egret {
          *
          */
         $hitTest(stageX: number, stageY: number): DisplayObject;
-        /**
-         * @private
-         */
-        $onRemoveFromStage(): void;
     }
 }
 declare module egret {
@@ -3452,11 +3462,47 @@ declare module egret {
      * @version Egret 2.5
      * @platform Web,Native
      */
-    const JointStyle: {
-        BEVEL: string;
-        MITER: string;
-        ROUND: string;
-    };
+    class JointStyle {
+        /**
+         * @language en_US
+         * Specifies beveled joints in the joints parameter of the egret.Graphics.lineStyle() method.
+         * @version Egret 2.5
+         * @platform Web,Native
+         */
+        /**
+         * @language zh_CN
+         * 在 egret.Graphics.lineStyle() 方法的 joints 参数中指定斜角连接。
+         * @version Egret 2.5
+         * @platform Web,Native
+         */
+        static BEVEL: string;
+        /**
+         * @language en_US
+         * Specifies mitered joints in the joints parameter of the egret.Graphics.lineStyle() method.
+         * @version Egret 2.5
+         * @platform Web,Native
+         */
+        /**
+         * @language zh_CN
+         * 在 egret.Graphics.lineStyle() 方法的 joints 参数中指定尖角连接。
+         * @version Egret 2.5
+         * @platform Web,Native
+         */
+        static MITER: string;
+        /**
+         * @language en_US
+         * Specifies round joints in the joints parameter of the egret.Graphics.lineStyle() method.
+         * @version Egret 2.5
+         * @platform Web,Native
+         */
+        /**
+         * @language zh_CN
+         * 在 egret.Graphics.lineStyle() 方法的 joints 参数中指定圆角连接。
+         * @version Egret 2.5
+         * @platform Web,Native
+         */
+        static ROUND: string;
+    }
 }
 declare module egret {
     /**
@@ -3487,12 +3533,24 @@ declare module egret {
     /**
      * OrientationMode 类为舞台初始旋转模式提供值。
      */
-    const OrientationMode: {
-        AUTO: string;
-        PORTRAIT: string;
-        LANDSCAPE: string;
-        LANDSCAPE_FLIPPED: string;
-    };
+    class OrientationMode {
+        /**
+         * 适配屏幕
+         */
+        static AUTO: string;
+        /**
+         * 默认竖屏
+         */
+        static PORTRAIT: string;
+        /**
+         * 默认横屏，舞台顺时针旋转90度
+         */
+        static LANDSCAPE: string;
+        /**
+         * 默认横屏，舞台逆时针旋转90度
+         */
+        static LANDSCAPE_FLIPPED: string;
+    }
 }
 declare module egret {
     var $TextureScaleFactor: number;
@@ -3617,7 +3675,7 @@ declare module egret {
         /**
          * @private
          */
-        _bitmapData: BitmapData;
+        _bitmapData: any;
         /**
          * @language en_US
          * The BitmapData object being referenced.
@@ -3636,7 +3694,7 @@ declare module egret {
          *
          * @param value
          */
-        _setBitmapData(value: BitmapData): void;
+        _setBitmapData(value: any): void;
         /**
          * @private
          * 设置Texture数据
@@ -3723,6 +3781,11 @@ declare module egret {
          * @platform Web,Native
          */
         dispose(): void;
+        private static _displayList;
+        static $addDisplayObject(displayObject: DisplayObject, bitmapData: BitmapData | Texture): void;
+        static $removeDisplayObject(displayObject: DisplayObject, bitmapData: BitmapData | Texture): void;
+        static $invalidate(bitmapData: BitmapData | Texture): void;
+        static $dispose(bitmapData: BitmapData | Texture): void;
     }
 }
 declare module egret {
@@ -3822,10 +3885,6 @@ declare module egret {
          */
         $measureContentBounds(bounds: Rectangle): void;
         $hitTest(stageX: number, stageY: number): DisplayObject;
-        /**
-         * @private
-         */
-        $onRemoveFromStage(): void;
     }
 }
 declare module egret {
@@ -3879,10 +3938,6 @@ declare module egret {
          * @private
          */
         $measureContentBounds(bounds: Rectangle): void;
-        /**
-         * @private
-         */
-        $onRemoveFromStage(): void;
     }
 }
 declare module egret {
@@ -3945,7 +4000,7 @@ declare module egret {
          * @private
          * 纹理缓存字典
          */
-        _textureMap: MapLike<Texture>;
+        _textureMap: Object;
         /**
          * @language en_US
          * Obtain a cached Texture object according to the specified texture name
@@ -6834,10 +6889,6 @@ declare module egret {
         $addTarget(target: DisplayObject): void;
         $removeTarget(target: DisplayObject): void;
         protected invalidate(): void;
-        /**
-         * @private
-         */
-        $toJson(): string;
     }
 }
 declare module egret {
@@ -6861,26 +6912,16 @@ declare module egret {
         /**
          * @language en_US
          * Initializes a BlurFilter object.
-         * @param blurX {number} The amount of horizontal blur. Valid values are 0 to 255 (floating point).
-         * @param blurY {number} The amount of vertical blur. Valid values are 0 to 255 (floating point).
-         * @param quality {number} The number of times to apply the filter.
          * @version Egret 3.1.0
          * @platform Web
          */
         /**
          * @language zh_CN
          * 创建一个 BlurFilter 对象。
-         * @param blurX {number} 水平模糊量。有效值为 0 到 255（浮点）。
-         * @param blurY {number} 垂直模糊量。有效值为 0 到 255（浮点）。
-         * @param quality {number} 应用滤镜的次数。暂未实现。
          * @version Egret 3.1.0
          * @platform Web
          */
-        constructor(blurX?: number, blurY?: number, quality?: number);
-        /**
-         * @private
-         */
-        $quality: number;
+        constructor(blurX: number, blurY: number);
         /**
          * @language en_US
          * The amount of horizontal blur.
@@ -6894,10 +6935,7 @@ declare module egret {
          * @platform Web
          */
         blurX: number;
-        /**
-         * @private
-         */
-        $blurX: number;
+        private $blurX;
         /**
          * @language en_US
          * The amount of vertical blur.
@@ -6911,14 +6949,7 @@ declare module egret {
          * @platform Web
          */
         blurY: number;
-        /**
-         * @private
-         */
-        $blurY: number;
-        /**
-         * @private
-         */
-        $toJson(): string;
+        private $blurY;
     }
 }
 declare module egret {
@@ -6981,10 +7012,6 @@ declare module egret {
          * @private
          */
         private setMatrix(value);
-        /**
-         * @private
-         */
-        $toJson(): string;
     }
 }
 declare module egret {
@@ -6993,7 +7020,8 @@ declare module egret {
      * @classdesc
      * 使用 GlowFilter 类可以对显示对象应用发光效果。在投影滤镜的 distance 和 angle 属性设置为 0 时，发光滤镜与投影滤镜极为相似。
      * @extends egret.Filter
-     * @version Egret 3.1.4
+     * @private
+     * @version Egret 2.4
      * @platform Web,Native
      */
     class GlowFilter extends Filter {
@@ -7010,22 +7038,6 @@ declare module egret {
          */
         $blue: number;
         /**
-         * @language en_US
-         * Initializes a new GlowFilter instance.
-         * @method egret.GlowFilter#constructor
-         * @param color {number} The color of the glow. Valid values are in the hexadecimal format 0xRRGGBB. The default value is 0xFF0000.
-         * @param alpha {number} The alpha transparency value for the color. Valid values are 0 to 1. For example, .25 sets a transparency value of 25%. The default value is 1.
-         * @param blurX {number} The amount of horizontal blur. Valid values are 0 to 255 (floating point).
-         * @param blurY {number} The amount of vertical blur. Valid values are 0 to 255 (floating point).
-         * @param strength {number} The strength of the imprint or spread. The higher the value, the more color is imprinted and the stronger the contrast between the glow and the background. Valid values are 0 to 255.
-         * @param quality {number} The number of times to apply the filter.
-         * @param inner {boolean} Specifies whether the glow is an inner glow. The value true indicates an inner glow. The default is false, an outer glow (a glow around the outer edges of the object).
-         * @param knockout {number} Specifies whether the object has a knockout effect. A value of true makes the object's fill transparent and reveals the background color of the document. The default value is false (no knockout effect).
-         * @version Egret 3.1.4
-         * @platform Web
-         */
-        /**
-         * @language zh_CN
          * 初始化 GlowFilter 对象
          * @method egret.GlowFilter#constructor
          * @param color {number} 光晕颜色，采用十六进制格式 0xRRGGBB。默认值为 0xFF0000。
@@ -7036,150 +7048,26 @@ declare module egret {
          * @param quality {number} 应用滤镜的次数。暂未实现。
          * @param inner {boolean} 指定发光是否为内侧发光。值 true 指定发光是内侧发光。值 false 指定发光是外侧发光（对象外缘周围的发光）。
          * @param knockout {number} 指定对象是否具有挖空效果。值为 true 将使对象的填充变为透明，并显示文档的背景颜色。
-         * @version Egret 3.1.4
-         * @platform Web
+         * @version Egret 2.4
+         * @platform Web,Native
          */
         constructor(color?: number, alpha?: number, blurX?: number, blurY?: number, strength?: number, quality?: number, inner?: boolean, knockout?: boolean);
-        /**
-         * @private
-         */
-        $color: number;
-        /**
-         * @language en_US
-         * The color of the glow.
-         * @version Egret 3.1.4
-         * @platform Web
-         */
-        /**
-         * @language zh_CN
-         * 光晕颜色。
-         * @version Egret 3.1.4
-         * @platform Web
-         */
+        private $color;
         color: number;
-        /**
-         * @private
-         */
-        $alpha: number;
-        /**
-         * @language en_US
-         * The alpha transparency value for the color.
-         * @version Egret 3.1.4
-         * @platform Web
-         */
-        /**
-         * @language zh_CN
-         * 颜色的 Alpha 透明度值。
-         * @version Egret 3.1.4
-         * @platform Web
-         */
+        private $alpha;
         alpha: number;
-        /**
-         * @private
-         */
-        $blurX: number;
-        /**
-         * @language en_US
-         * The amount of horizontal blur.
-         * @version Egret 3.1.4
-         * @platform Web
-         */
-        /**
-         * @language zh_CN
-         * 水平模糊量。
-         * @version Egret 3.1.4
-         * @platform Web
-         */
+        private $blurX;
         blurX: number;
-        /**
-         * @private
-         */
-        $blurY: number;
-        /**
-         * @language en_US
-         * The amount of vertical blur.
-         * @version Egret 3.1.4
-         * @platform Web
-         */
-        /**
-         * @language zh_CN
-         * 垂直模糊量。
-         * @version Egret 3.1.4
-         * @platform Web
-         */
+        private $blurY;
         blurY: number;
-        /**
-         * @private
-         */
-        $strength: number;
-        /**
-         * @language en_US
-         * The strength of the imprint or spread.
-         * @version Egret 3.1.4
-         * @platform Web
-         */
-        /**
-         * @language zh_CN
-         * 印记或跨页的强度。
-         * @version Egret 3.1.4
-         * @platform Web
-         */
+        private $strength;
         strength: number;
-        /**
-         * @private
-         */
-        $quality: number;
-        /**
-         * @language en_US
-         * The number of times to apply the filter.
-         * @version Egret 3.1.4
-         * @platform Web
-         */
-        /**
-         * @language zh_CN
-         * 应用滤镜的次数。
-         * @version Egret 3.1.4
-         * @platform Web
-         */
+        private $quality;
         quality: number;
-        /**
-         * @private
-         */
-        $inner: boolean;
-        /**
-         * @language en_US
-         * Specifies whether the glow is an inner glow.
-         * @version Egret 3.1.4
-         * @platform Web
-         */
-        /**
-         * @language zh_CN
-         * 指定发光是否为内侧发光。
-         * @version Egret 3.1.4
-         * @platform Web
-         */
+        private $inner;
         inner: boolean;
-        /**
-         * @private
-         */
-        $knockout: boolean;
-        /**
-         * @language en_US
-         * Specifies whether the object has a knockout effect.
-         * @version Egret 3.1.4
-         * @platform Web
-         */
-        /**
-         * @language zh_CN
-         * 指定对象是否具有挖空效果。
-         * @version Egret 3.1.4
-         * @platform Web
-         */
+        private $knockout;
         knockout: boolean;
-        /**
-         * @private
-         */
-        $toJson(): string;
     }
 }
 declare module egret {
@@ -7188,32 +7076,14 @@ declare module egret {
      * @classdesc
      * 可使用 DropShadowFilter 类向显示对象添加投影。
      * @extends egret.GlowFilter
-     * @version Egret 3.1.4
+     * @private
+     * @version Egret 2.4
      * @platform Web,Native
      */
     class DropShadowFilter extends GlowFilter {
         /**
-         * @language en_US
-         * Initializes a new DropShadowFilter instance.
-         * @method egret.DropShadowFilter#constructor
-         * @param distance {number} The offset distance of the bevel. Valid values are in pixels (floating point).
-         * @param angle {number} The angle of the bevel. Valid values are from 0 to 360°.
-         * @param color {number} The color of the glow. Valid values are in the hexadecimal format 0xRRGGBB. The default value is 0xFF0000.
-         * @param alpha {number} The alpha transparency value for the color. Valid values are 0 to 1. For example, .25 sets a transparency value of 25%. The default value is 1.
-         * @param blurX {number} The amount of horizontal blur. Valid values are 0 to 255 (floating point).
-         * @param blurY {number} The amount of vertical blur. Valid values are 0 to 255 (floating point).
-         * @param strength {number} The strength of the imprint or spread. The higher the value, the more color is imprinted and the stronger the contrast between the glow and the background. Valid values are 0 to 255.
-         * @param quality {number} The number of times to apply the filter.
-         * @param inner {boolean} Specifies whether the glow is an inner glow. The value true indicates an inner glow. The default is false, an outer glow (a glow around the outer edges of the object).
-         * @param knockout {number} Specifies whether the object has a knockout effect. A value of true makes the object's fill transparent and reveals the background color of the document. The default value is false (no knockout effect).
-         * @param hideObject {number} Indicates whether or not the object is hidden. The value true indicates that the object itself is not drawn; only the shadow is visible. The default is false, meaning that the object is shown.
-         * @version Egret 3.1.4
-         * @platform Web
-         */
-        /**
-         * @language zh_CN
          * 初始化 DropShadowFilter 对象
-         * @method egret.DropShadowFilter#constructor
+         * @method egret.GlowFilter#constructor
          * @param distance {number} 阴影的偏移距离，以像素为单位。
          * @param angle {number} 阴影的角度，0 到 360 度（浮点）。
          * @param color {number} 光晕颜色，采用十六进制格式 0xRRGGBB。默认值为 0xFF0000。
@@ -7224,66 +7094,14 @@ declare module egret {
          * @param quality {number} 应用滤镜的次数。暂未实现。
          * @param inner {boolean} 指定发光是否为内侧发光。值 true 指定发光是内侧发光。值 false 指定发光是外侧发光（对象外缘周围的发光）。
          * @param knockout {number} 指定对象是否具有挖空效果。值为 true 将使对象的填充变为透明，并显示文档的背景颜色。
-         * @param hideObject {number} 表示是否隐藏对象。如果值为 true，则表示没有绘制对象本身，只有阴影是可见的。默认值为 false（显示对象）。
-         * @version Egret 3.1.4
-         * @platform Web
+         * @version Egret 2.4
+         * @platform Web,Native
          */
-        constructor(distance?: number, angle?: number, color?: number, alpha?: number, blurX?: number, blurY?: number, strength?: number, quality?: number, inner?: boolean, knockout?: boolean, hideObject?: boolean);
-        /**
-         * @private
-         */
-        $distance: number;
-        /**
-         * @language en_US
-         * The offset distance of the bevel.
-         * @version Egret 3.1.4
-         * @platform Web
-         */
-        /**
-         * @language zh_CN
-         * 阴影的偏移距离，以像素为单位。
-         * @version Egret 3.1.4
-         * @platform Web
-         */
+        constructor(distance?: number, angle?: number, color?: number, alpha?: number, blurX?: number, blurY?: number, strength?: number, quality?: number, inner?: boolean, knockout?: boolean);
+        private $distance;
         distance: number;
-        /**
-         * @private
-         */
-        $angle: number;
-        /**
-         * @language en_US
-         * The angle of the bevel.
-         * @version Egret 3.1.4
-         * @platform Web
-         */
-        /**
-         * @language zh_CN
-         * 阴影的角度。
-         * @version Egret 3.1.4
-         * @platform Web
-         */
+        private $angle;
         angle: number;
-        /**
-         * @private
-         */
-        $hideObject: boolean;
-        /**
-         * @language en_US
-         * Indicates whether or not the object is hidden.
-         * @version Egret 3.1.4
-         * @platform Web
-         */
-        /**
-         * @language zh_CN
-         * 表示是否隐藏对象。
-         * @version Egret 3.1.4
-         * @platform Web
-         */
-        hideObject: boolean;
-        /**
-         * @private
-         */
-        $toJson(): string;
     }
 }
 declare module egret {
@@ -8051,14 +7869,12 @@ declare module egret {
         /**
          * @language en_US
          * Background music
-         * @default "music"
          * @version Egret 2.4
          * @platform Web,Native
          */
         /**
          * @language zh_CN
          * 背景音乐
-         * @default "music"
          * @version Egret 2.4
          * @platform Web,Native
          */
@@ -8066,14 +7882,12 @@ declare module egret {
         /**
          * @language en_US
          * EFFECT
-         * @default "effect"
          * @version Egret 2.4
          * @platform Web,Native
          */
         /**
          * @language zh_CN
          * 音效
-         * @default "effect"
          * @version Egret 2.4
          * @platform Web,Native
          */
@@ -8363,9 +8177,6 @@ declare module egret {
         new (url?: string, cache?: boolean): Video;
     };
 }
-/**
- * @private
- */
 declare module egret_native {
     var nativeType: string;
     /**
@@ -8382,7 +8193,6 @@ declare module egret_native {
     function onTouchesMove(num: number, ids: Array<any>, xs_array: Array<any>, ys_array: Array<any>): any;
     function onTouchesEnd(num: number, ids: Array<any>, xs_array: Array<any>, ys_array: Array<any>): any;
     function onTouchesCancel(num: number, ids: Array<any>, xs_array: Array<any>, ys_array: Array<any>): any;
-    function sendToC(float32Array: Float32Array, arrayBufferLen: number, array: Array<string>): void;
     /**
      * 启动主循环
      * @param callback 主循环回调函数
@@ -9200,7 +9010,6 @@ declare module egret.sys {
          * 绘制根节点显示对象到目标画布，返回draw的次数。
          */
         drawToSurface(): number;
-        private bitmapData;
         /**
          * @private
          */
@@ -9552,15 +9361,9 @@ declare module egret.sys {
 }
 declare module egret.sys {
     /**
-     * @private
      * 共享的用于碰撞检测的渲染缓冲
      */
-    var customHitTestBuffer: sys.RenderBuffer;
-    /**
-     * @private
-     * 共享的用于canvas碰撞检测的渲染缓冲
-     */
-    var canvasHitTestBuffer: sys.RenderBuffer;
+    var hitTestBuffer: sys.RenderBuffer;
     /**
      * @private
      * 渲染缓冲
@@ -9634,25 +9437,9 @@ declare module egret.sys {
          */
         setDirtyRegionPolicy(state: string): void;
     }
-    /**
-     * @private
-     */
     var RenderBuffer: {
         /**
          * 创建一个RenderTarget。
-         * 注意：若内存不足或创建缓冲区失败，将会抛出错误异常。
-         * @param width 渲染缓冲的初始宽
-         * @param height 渲染缓冲的初始高
-         * @param root 是否为舞台buffer
-         */
-        new (width?: number, height?: number, root?: boolean): RenderBuffer;
-    };
-    /**
-     * @private
-     */
-    var CanvasRenderBuffer: {
-        /**
-         * 创建一个CanvasRenderBuffer。
          * 注意：若内存不足或创建缓冲区失败，将会抛出错误异常。
          * @param width 渲染缓冲的初始宽
          * @param height 渲染缓冲的初始高
@@ -9876,15 +9663,7 @@ declare module egret {
     }
 }
 declare module egret.sys {
-    /**
-     * @private
-     */
     var systemRenderer: SystemRenderer;
-    /**
-     * @private
-     * 用于碰撞检测绘制
-     */
-    var canvasRenderer: SystemRenderer;
     /**
      * @private
      * 显示渲染器接口
@@ -9982,8 +9761,6 @@ declare module egret.sys {
          * @private
          */
         private frameInterval;
-        private frameDeltaTime;
-        private lastTimeStamp;
         /**
          * @private
          * 设置全局帧率
@@ -10204,14 +9981,6 @@ declare module egret.sys {
          */
         blendMode: number;
         /**
-         * 相对透明度
-         */
-        alpha: number;
-        /**
-         * 相对透明度
-         */
-        filter: ColorMatrixFilter;
-        /**
          * 绘制一次位图
          */
         drawImage(sourceX: number, sourceY: number, sourceW: number, sourceH: number, drawX: number, drawY: number, drawW: number, drawH: number): void;
@@ -10219,16 +9988,6 @@ declare module egret.sys {
          * 在显示对象的$render()方法被调用前，自动清空自身的drawData数据。
          */
         cleanBeforeRender(): void;
-        static $updateTextureData(node: sys.BitmapNode, image: any, bitmapX: number, bitmapY: number, bitmapWidth: number, bitmapHeight: number, offsetX: number, offsetY: number, textureWidth: number, textureHeight: number, destW: number, destH: number, sourceWidth: number, sourceHeight: number, scale9Grid: egret.Rectangle, fillMode: string, smoothing: boolean): void;
-        /**
-         * @private
-         * 绘制九宫格位图
-         */
-        private static $updateTextureDataWithScale9Grid(node, scale9Grid, bitmapX, bitmapY, bitmapWidth, bitmapHeight, offsetX, offsetY, textureWidth, textureHeight, destW, destH);
-        /**
-  * @private
-  */
-        private static drawClipImage(node, scale, bitmapX, bitmapY, scaledBitmapW, scaledBitmapH, offsetX, offsetY, destW, destH, startX?, startY?);
     }
 }
 declare module egret.sys {
@@ -10298,10 +10057,6 @@ declare module egret.sys {
         $texture: any;
         $textureWidth: any;
         $textureHeight: any;
-        /**
-         * 清除非绘制的缓存数据
-         */
-        clean(): void;
     }
 }
 declare module egret.sys {
@@ -10384,6 +10139,19 @@ declare module egret.sys {
          * 绘制一次位图
          */
         setAlpha(alpha: number): void;
+    }
+}
+declare module egret.sys {
+    /**
+     * @private
+     * 位图渲染节点
+     */
+    class SetTransformNode extends RenderNode {
+        constructor();
+        /**
+         * 绘制一次位图
+         */
+        setTransform(a: number, b: number, c: number, d: number, tx: number, ty: number): void;
     }
 }
 declare module egret.sys {
@@ -10488,15 +10256,10 @@ declare module egret.sys {
         $texture: any;
         $textureWidth: any;
         $textureHeight: any;
-        /**
-         * 清除非绘制的缓存数据
-         */
-        clean(): void;
     }
 }
 declare module egret.sys {
     /**
-     * @private
      * 路径类型
      */
     const enum PathType {
@@ -10536,16 +10299,6 @@ declare module egret.sys {
         $data: number[];
         private commandPosition;
         private dataPosition;
-        /**
-         * 当前移动到的坐标X
-         * 注意：目前只有drawArc之前会被赋值
-         */
-        $lastX: number;
-        /**
-         * 当前移动到的坐标Y
-         * 注意：目前只有drawArc之前会被赋值
-         */
-        $lastY: number;
         /**
          * 将当前绘图位置移动到 (x, y)。如果缺少任何一个参数，则此方法将失败，并且当前绘图位置不改变。
          * @param x 一个表示相对于父显示对象注册点的水平位置的数字（以像素为单位）。
@@ -10728,10 +10481,6 @@ declare module egret {
          * 绘制一个显示对象
          */
         private drawDisplayObject(displayObject, context, dirtyList, matrix, displayList, clipRegion, root);
-        /**
-         * @private
-         */
-        private drawWithFilter(displayObject, context, dirtyList, matrix, clipRegion, root);
         private renderingMask;
         /**
          * @private
@@ -10754,21 +10503,17 @@ declare module egret {
          */
         private renderNode(node, context, forHitTest?);
         /**
-         * render mesh
-         */
-        private renderMesh(node, context);
-        /**
          * @private
          */
         private renderBitmap(node, context);
         /**
          * @private
          */
-        renderText(node: sys.TextNode, context: CanvasRenderingContext2D): void;
+        private renderText(node, context);
         /**
          * @private
          */
-        renderGraphics(node: sys.GraphicsNode, context: CanvasRenderingContext2D, forHitTest?: boolean): void;
+        private renderGraphics(node, context, forHitTest?);
         private renderPath(path, context);
         private renderGroup(groupNode, context);
         /**
@@ -11259,21 +11004,6 @@ declare module egret {
          */
         static supportVersion: string;
         static $supportVersion: string;
-        /***
-         * @language en_US
-         * version of Egret.
-         * @type {string}
-         * @version Egret 3.2.0
-         * @platform Web,Native
-         */
-        /***
-         * @language zh_CN
-         * Egret 的版本号。
-         * @type {string}
-         * @version Egret 3.2.0
-         * @platform Web,Native
-         */
-        static engineVersion: string;
         /**
          * 设置系统信息
          */
@@ -11332,13 +11062,7 @@ declare module egret {
         static $boundingClientHeight: number;
     }
 }
-/**
- * @private
- */
 declare var testDeviceType: () => boolean;
-/**
- * @private
- */
 declare var testRuntimeType: () => boolean;
 declare module egret {
     /**
@@ -11671,7 +11395,7 @@ declare module egret {
          */
         /**
          * @language zh_CN
-         * 一个整数，表示字符之间的距离。
+         * 一个整数，表示字符之间的距量。
          * @default 0
          * @version Egret 2.4
          * @platform Web,Native
@@ -12242,10 +11966,6 @@ declare module egret {
          * @private
          */
         private stageText;
-        /**
-         * @private
-         */
-        private stageTextAdded;
         /**
          * @private
          */
@@ -13162,7 +12882,7 @@ declare module egret {
          * @private
          *
          */
-        private fillBackground(lines?);
+        private fillBackground(lines);
         /**
          * @language en_US
          * Enter the text automatically entered into the input state, the input type is text only and may only be invoked in the user interaction.
@@ -13462,9 +13182,6 @@ declare module egret {
         static $getScrollNum(textfield: egret.TextField): number;
     }
 }
-/**
- * @private
- */
 declare module egret.sys {
     /**
      * 测量文本在指定样式下的宽度。
@@ -14433,17 +14150,8 @@ declare module egret {
         private static cosInt(value);
     }
 }
-/**
- * @private
- */
 declare var egret_sin_map: {};
-/**
- * @private
- */
 declare var egret_cos_map: {};
-/**
- * @private
- */
 declare var DEG_TO_RAD: number;
 declare module egret {
     /**
@@ -14607,10 +14315,6 @@ declare module egret {
          * @private
          */
         private lastCount;
-        /**
-         * @private
-         */
-        private lastTimeStamp;
         /**
          * @private
          * Ticker以60FPS频率刷新此方法
