@@ -1,149 +1,174 @@
-/*var Cache:MethodDecorator = (target:any,propertyName,desc:PropertyDescriptor)=>{
+var Cache: MethodDecorator = (target: any, propertyName, desc: PropertyDescriptor) => {
     const getter = desc.get;
-    desc.get = function(){
+    desc.get = function () {
         return getter.apply(this);
     }
     return desc;
 }
 
-class Hero{
-    public level:number = 1;
-
-    @Cache
-    public get maxHp():number {
-        return this.level = 10;
-    }
-}*/
-
-var arr: Hero[] = [];
-
-function test(hero: Hero) {
-    return true;
-}
-
-var is_every_hero_in_team = arr.every(hero => hero.isInTeam)
-
 class User {
+    id: String;
     cash = 0;
     gold = 0;
-    exp = 0;
-    totalExp = 0;
     level = 0;
-    heros: Hero[] = [];
-    _herosInTeam: Hero[] = [];
-    pet: pet;
-    
-    constructor(){}
+    ATK = 0;
+    H: Hero[] = [];
+
+    constructor(ID: String) {
+        this.id = ID;
+    }
 
     get herosInTeam() {
-        return this.heros.filter(hero => hero.isInTeam)
+        return this.H.filter(hero => hero.isInTeam)
     }
 
-    @logger
-    print() {
-        console.log("111");
-    }
-
-    getFightPower() {
+    @Cache
+    public get maxLevel(): number {
         var result = 0;
-        this.herosInTeam.map(hero => result += hero.getFightPower());
-        result += this.pet.getFightPower();
-        return result;
+        this.H.forEach(h => this.level += h.level);
+        return this.level;
+    }
+
+    @Cache
+    public get maxATK(): number {
+        this.H.forEach(h => this.ATK += h.ATK);
+        return this.level;
     }
 
 }
 
-
+//STR=力量，DEX=灵巧，VIT=耐力(影响hp)，INT=智力，MND=精神，PIE=信仰（影响mp）
 class Hero {
+    belong: User;
+    name: String;
+    level: number = 1;
+    hp: number = 1;
+    mp: number = 1;
+    STR: number = 1;
+    DEX: number = 1;
+    VIT: number = 1;
+    INT: number = 1;
+    MND: number = 1;
+    PIE: number = 1;
+    ATK: number = 1;
     isInTeam: boolean = false;
-    equipments: Equipment[] = [];
-    level = 1;
-    hp = 50;
-    power = 100;
-    intelligence = 100;
-    agility = 100;
-    quality: number = 2.8;
+    E: Equipment[] = [];
 
-    get maxHp() {
+    constructor(Belong: User, N: String, S: number, D: number, V: number, I: number, M: number, P: number) {
+        this.belong = Belong;
+        this.name = N;
+        this.STR = S;
+        this.DEX = D;
+        this.VIT = V;
+        this.INT = I;
+        this.MND = M;
+        this.PIE = P;
+    }
+
+    @Cache
+    public get maxHp(): number {
         var result = 0;
-        this.equipments.forEach(e => result += e.EmaxHp)
-        return this.hp + result;
+        this.E.forEach(e => result += e.VIT);
+        this.hp = result * 100;
+        return this.hp;
     }
 
-    get attack() {
+    @Cache
+    public get maxMp(): number {
         var result = 0;
-        this.equipments.forEach(e => result += e.attack)
-        return result;
+        this.E.forEach(e => result += e.PIE);
+        this.mp = result * 100;
+        return this.mp;
+    }
+    @Cache
+    public get maxATK(): number {
+        this.ATK = (this.STR + this.DEX + this.VIT + this.INT + this.MND + this.PIE) / 6;
+        return this.ATK;
     }
 
-    get fightPower() {
-        return this.getFightPower();
+    equip(equipment: Equipment) {
+
+        this.E.push(equipment);
+        this.heroInformationUpdate();
     }
 
-    getFightPower() {
-        var EI = this.intelligence;
-        var EA = this.agility;
-        var EP = this.power;
-        this.equipments.forEach(e => EI += e.intelligence)
-        this.equipments.forEach(e => EA += e.agility)
-        this.equipments.forEach(e => EP += e.power)
-        return EP/2 + EA/3 + EI/4;
+    heroInformationUpdate() {
+        this.E.forEach(e => this.STR += e.STR);
+        this.E.forEach(e => this.DEX += e.DEX);
+        this.E.forEach(e => this.VIT += e.VIT);
+        this.E.forEach(e => this.INT += e.INT);
+        this.E.forEach(e => this.MND += e.MND);
+        this.E.forEach(e => this.PIE += e.PIE);
     }
-
 }
 
 class Equipment {
+    belong: Hero;
+    name: String;
+    STR: number = 100;
+    DEX: number = 100;
+    VIT: number = 100;
+    INT: number = 100;
+    MND: number = 100;
+    PIE: number = 100;
+    Eq: number = 0;
+    J: Jewelry[] = [];
 
-    jewels: jewel[] = [];
-    hp = 100;
-    power = 100;
-    intelligence = 100;
-    agility = 100;
-    level = (this.power+this.intelligence+this.agility)/40;
-
-    get EmaxHp() {
-        this.jewels.forEach(j => this.hp += j.hp)
-        return this.hp^2;
+    constructor(Belong: Hero, N: String, S: number, D: number, V: number, I: number, M: number, P: number) {
+        this.belong = Belong;
+        this.name = N;
+        this.STR = S;
+        this.DEX = D;
+        this.VIT = V;
+        this.INT = I;
+        this.MND = M;
+        this.PIE = P;
     }
 
-    get attack() {
-        return 50;
+    public get Equality(): number {
+        this.Eq = (this.STR + this.DEX + this.VIT + this.INT + this.MND + this.PIE) / 100;
+        return this.Eq;
+    }
+
+    @Cache
+    public get maxVIT(): number {
+        this.J.forEach(j => this.VIT += j.VIT);
+        return this.VIT;
+    }
+
+    @Cache
+    public get maxPIE(): number {
+        this.J.forEach(j => this.PIE += j.PIE);
+        return this.PIE;
+    }
+}
+
+class Jewelry {
+    belong: Equipment;
+    name: String;
+    STR: number = 10;
+    DEX: number = 10;
+    VIT: number = 10;
+    INT: number = 10;
+    MND: number = 10;
+    PIE: number = 10;
+    Jq: number = 0;
+
+    constructor(Belong: Equipment, N: String, S: number, D: number, V: number, I: number, M: number, P: number) {
+        this.belong = Belong;
+        this.name = N;
+        this.STR = S;
+        this.DEX = D;
+        this.VIT = V;
+        this.INT = I;
+        this.MND = M;
+        this.PIE = P;
+    }
+
+    public get Jquality(): number {
+        this.Jq = (this.STR + this.DEX + this.VIT + this.INT + this.MND + this.PIE) / 10;
+        return this.Jq;
     }
 
 }
 
-class jewel {
-    hp = 0;
-    power = 10;
-    intelligence = 10;
-    agility = 10;
-    level = (this.power+this.intelligence+this.agility)/4;
-}
-
-class pet {
-    getFightPower() {
-        return 200;
-    }
-}
-
-var logger: MethodDecorator = (target, key, desc) => {
-    const method = desc.value;
-    desc.velue = function (...arg) {
-        console.log("111");
-        return method.apply(this, arg);
-    }
-}
-
-var Cache: MethodDecorator = (target, propertykey, desc) => {
-
-    const method = desc.value;
-    desc.velue = function (...arg) {
-        console.log(target,desc);
-        var cacheKey = "_cache"+ propertykey;
-        if(!target[cacheKey]){
-            target[cacheKey] = method.apply(this,arg);
-        }
-        return target[cacheKey];
-    }
-
-}
